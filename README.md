@@ -1,8 +1,8 @@
-# Hitchhiking System API Documentation
+# Hitchhiking System API Documentation (Revised)
 
 ## Introduction
 
-This API allows users to manage their hitchhiking trips, search for potential companions, rate spots, create events, and interact with emergency services. It supports user registration, profile management, trip posting, event participation, spot rating, and more. The system is designed for scalability and performance, ensuring smooth interaction between users, events, and locations.
+This API allows users to manage hitchhiking trips, search for potential companions, rate hitchhiking spots, create events, and interact with emergency services. It supports user registration, profile management, trip posting, event participation, spot rating, achievement tracking, and more. The system is designed for scalability and performance, ensuring smooth interaction between users, events, and locations.
 
 ## Authentication
 
@@ -22,16 +22,19 @@ Registers a new user in the system.
         "username": "johndoe",
         "email": "johndoe@example.com",
         "password": "password123",
+        "confirm_password": "password123",
         "bio": "Adventurer looking for companions."
     }
     ```
 
 - **Response:**
     - `201 Created`
-    - `{
-        "message": "Registration successful.",
-        "user_id": 123
-    }`
+    - ```json
+      {
+          "message": "Registration successful.",
+          "user_id": 123
+      }
+      ```
 
 #### Login
 
@@ -49,9 +52,11 @@ Logs in a user and returns a JWT token.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "token": "jwt-token-here"
-    }`
+    - ```json
+      {
+          "token": "jwt-token-here"
+      }
+      ```
 
 #### Logout
 
@@ -61,9 +66,11 @@ Logs out the user by invalidating the current session.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Logout successful."
-    }`
+    - ```json
+      {
+          "message": "Logout successful."
+      }
+      ```
 
 ## User Profile Management
 
@@ -75,11 +82,13 @@ Fetches the profile details of the authenticated user.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "username": "johndoe",
-        "email": "johndoe@example.com",
-        "bio": "Adventurer looking for companions."
-    }`
+    - ```json
+      {
+          "username": "johndoe",
+          "email": "johndoe@example.com",
+          "bio": "Adventurer looking for companions."
+      }
+      ```
 
 ### Update User Profile
 
@@ -96,9 +105,11 @@ Updates the authenticated user's profile (e.g., bio, photo).
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Profile updated successfully."
-    }`
+    - ```json
+      {
+          "message": "Profile updated successfully."
+      }
+      ```
 
 ## Trip Management
 
@@ -106,7 +117,7 @@ Updates the authenticated user's profile (e.g., bio, photo).
 
 **POST /trip**
 
-Allows users to post their upcoming hitchhiking trip with goals, destinations, and details.
+Allows users to post their upcoming hitchhiking trip with goals, approximate location, destination, and details.
 
 - **Request Body:**
     ```json
@@ -114,16 +125,20 @@ Allows users to post their upcoming hitchhiking trip with goals, destinations, a
         "trip_name": "Hitchhike from NYC to LA",
         "start_date": "2024-12-01T00:00:00Z",
         "end_date": "2024-12-15T00:00:00Z",
+        "approximate_location": "New York City, NY",
+        "destination": "Los Angeles, CA",
         "goals": "Looking for a companion to join me on the road."
     }
     ```
 
 - **Response:**
     - `201 Created`
-    - `{
-        "trip_id": 45,
-        "message": "Trip posted successfully."
-    }`
+    - ```json
+      {
+          "trip_id": 45,
+          "message": "Trip posted successfully."
+      }
+      ```
 
 ### Retrieve Trips
 
@@ -139,15 +154,19 @@ Searches for trips based on goals, location, and other parameters.
 
 - **Response:**
     - `200 OK`
-    - `[
-        {
-            "trip_id": 45,
-            "trip_name": "Hitchhike from NYC to LA",
-            "start_date": "2024-12-01T00:00:00Z",
-            "end_date": "2024-12-15T00:00:00Z",
-            "goals": "Looking for a companion."
-        }
-    ]`
+    - ```json
+      [
+          {
+              "trip_id": 45,
+              "trip_name": "Hitchhike from NYC to LA",
+              "start_date": "2024-12-01T00:00:00Z",
+              "end_date": "2024-12-15T00:00:00Z",
+              "approximate_location": "New York City, NY",
+              "destination": "Los Angeles, CA",
+              "goals": "Looking for a companion."
+          }
+      ]
+      ```
 
 ### Delete Trip
 
@@ -157,9 +176,11 @@ Deletes an existing trip.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Trip deleted successfully."
-    }`
+    - ```json
+      {
+          "message": "Trip deleted successfully."
+      }
+      ```
 
 ### Respond to Trip
 
@@ -176,9 +197,11 @@ A user can respond to a trip post, showing interest or asking for more details.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Response sent successfully."
-    }`
+    - ```json
+      {
+          "message": "Response sent successfully."
+      }
+      ```
 
 ## Spot Management
 
@@ -186,63 +209,74 @@ A user can respond to a trip post, showing interest or asking for more details.
 
 **POST /spot**
 
-Users can add a new hitchhiking spot.
+Users can add a new hitchhiking spot, including tips and an initial rating.
 
 - **Request Body:**
     ```json
     {
         "location": "Los Angeles, CA",
-        "description": "Good spot for hitchhiking near the freeway exit."
+        "tips": "Good spot near the freeway exit. Look for the gas station.",
+        "initial_rating": 4,
+        "waiting_time": "10-15 minutes"
     }
     ```
 
 - **Response:**
     - `201 Created`
-    - `{
-        "spot_id": 123,
-        "message": "Spot posted successfully."
-    }`
+    - ```json
+      {
+          "spot_id": 123,
+          "message": "Spot posted successfully."
+      }
+      ```
 
 ### Retrieve Spots
 
 **GET /spots**
 
-Retrieve a list of spots based on filters like location or ratings.
+Retrieve a list of spots based on filters like location, ratings, and waiting time.
 
 - **Query Parameters:**
     - `location`: Search spots by location.
     - `rating`: Search spots by rating.
+    - `waiting_time`: Search spots by average waiting time.
 
 - **Response:**
     - `200 OK`
-    - `[
-        {
-            "spot_id": 123,
-            "location": "Los Angeles, CA",
-            "description": "Good spot for hitchhiking near the freeway exit.",
-            "rating": 4.5
-        }
-    ]`
+    - ```json
+      [
+          {
+              "spot_id": 123,
+              "location": "Los Angeles, CA",
+              "tips": "Good spot near the freeway exit. Look for the gas station.",
+              "rating": 4.5,
+              "waiting_time": "10-15 minutes"
+          }
+      ]
+      ```
 
 ### Rate a Spot
 
 **POST /spot/{spot_id}/rate**
 
-Users can rate a hitchhiking spot based on their experience.
+Users can rate a hitchhiking spot based on their experience, including waiting time.
 
 - **Request Body:**
     ```json
     {
         "rating": 5,
-        "comment": "Great spot, easy to get a ride."
+        "comment": "Great spot, easy to get a ride.",
+        "waiting_time": "5-10 minutes"
     }
     ```
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Spot rated successfully."
-    }`
+    - ```json
+      {
+          "message": "Spot rated successfully."
+      }
+      ```
 
 ### Approve a Spot (Admin)
 
@@ -252,9 +286,11 @@ Approves a spot for visibility.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Spot approved."
-    }`
+    - ```json
+      {
+          "message": "Spot approved."
+      }
+      ```
 
 ### Disapprove a Spot (Admin)
 
@@ -264,9 +300,11 @@ Disapproves a spot for visibility.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Spot disapproved."
-    }`
+    - ```json
+      {
+          "message": "Spot disapproved."
+      }
+      ```
 
 ## Event Management
 
@@ -288,10 +326,12 @@ Allows event organizers to create new hitchhiking-related events.
 
 - **Response:**
     - `201 Created`
-    - `{
-        "event_id": 25,
-        "message": "Event created successfully."
-    }`
+    - ```json
+      {
+          "event_id": 25,
+          "message": "Event created successfully."
+      }
+      ```
 
 ### Retrieve Events
 
@@ -305,15 +345,17 @@ List all events or filter by date, location, or type.
 
 - **Response:**
     - `200 OK`
-    - `[
-        {
-            "event_id": 25,
-            "event_name": "Hitchhiking Meetup in NYC",
-            "location": "Central Park, NYC",
-            "date": "2024-12-10T14:00:00Z",
-            "details": "Join us for a hitchhiking event!"
-        }
-    ]`
+    - ```json
+      [
+          {
+              "event_id": 25,
+              "event_name": "Hitchhiking Meetup in NYC",
+              "location": "Central Park, NYC",
+              "date": "2024-12-10T14:00:00Z",
+              "details": "Join us for a hitchhiking event!"
+          }
+      ]
+      ```
 
 ### Join an Event
 
@@ -323,9 +365,11 @@ Allows a user to join an event.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Successfully joined the event."
-    }`
+    - ```json
+      {
+          "message": "Successfully joined the event."
+      }
+      ```
 
 ### Rate an Event
 
@@ -343,9 +387,11 @@ Users can rate an event they attended.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Event rated successfully."
-    }`
+    - ```json
+      {
+          "message": "Event rated successfully."
+      }
+      ```
 
 ## Notifications
 
@@ -357,14 +403,16 @@ Fetches all notifications for the authenticated user (e.g., new trip responses, 
 
 - **Response:**
     - `200 OK`
-    - `[
-        {
-            "notification_id": 1,
-            "message": "You have a new response to your trip post.",
-            "type": "response",
-            "read": false
-        }
-    ]`
+    - ```json
+      [
+          {
+              "notification_id": 1,
+              "message": "You have a new response to your trip post.",
+              "type": "response",
+              "read": false
+          }
+      ]
+      ```
 
 ### Mark Notification as Read
 
@@ -381,9 +429,11 @@ Marks a specific notification as read.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Notification marked as read."
-    }`
+    - ```json
+      {
+          "message": "Notification marked as read."
+      }
+      ```
 
 ## Emergency Services
 
@@ -395,25 +445,89 @@ Triggers an emergency alert, notifying contacts and nearby users.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Emergency alert sent successfully."
-    }`
+    - ```json
+      {
+          "message": "Emergency alert sent successfully."
+      }
+      ```
 
 ### Emergency Contacts
 
-**GET /user/{user_id}/em
-
-ergency**
+**GET /user/{user_id}/emergency**
 
 Retrieves emergency contact details for a user.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "emergency_contacts": [
-            {"name": "Jane Doe", "phone": "+1234567890"}
-        ]
-    }`
+    - ```json
+      {
+          "emergency_contacts": [
+              {"name": "Jane Doe", "phone": "+1234567890"}
+          ]
+      }
+      ```
+
+## Achievement System
+
+### List Achievements
+
+**GET /achievements**
+
+Fetches a list of achievements available for users (e.g., "First Trip Posted," "Top Spot Contributor").
+
+- **Response:**
+    - `200 OK`
+    - ```json
+      [
+          {
+              "achievement_id": 1,
+              "title": "First Trip Posted",
+              "description": "Awarded for posting your first trip."
+          }
+      ]
+      ```
+
+### User Achievements
+
+**GET /user/achievements**
+
+Retrieves a list of achievements unlocked by the authenticated user.
+
+- **Response:**
+    - `200 OK`
+    - ```json
+      [
+          {
+              "achievement_id": 1,
+              "title": "First Trip Posted",
+              "description": "Awarded for posting your first trip.",
+              "date_achieved": "2024-01-01T00:00:00Z"
+          }
+      ]
+      ```
+
+## Reporting Users
+
+### Report a User
+
+**POST /user/{user_id}/report**
+
+Allows a user to report another user for inappropriate behavior or safety concerns.
+
+- **Request Body:**
+    ```json
+    {
+        "reason": "Inappropriate behavior during a trip."
+    }
+    ```
+
+- **Response:**
+    - `200 OK`
+    - ```json
+      {
+          "message": "User reported successfully."
+      }
+      ```
 
 ## Admin Operations
 
@@ -425,20 +539,24 @@ Admin verifies a spot for its validity or safety.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Spot verified."
-    }`
+    - ```json
+      {
+          "message": "Spot verified."
+      }
+      ```
 
 ### Approve or Disapprove Spot (Admin)
 
 **POST /spot/{spot_id}/approve**  
 **POST /spot/{spot_id}/disapprove**
 
-Approve or disapprove a spot for its visibility on the platform.
+Admin approves or disapproves a spot for visibility on the platform.
 
 - **Response:**
     - `200 OK`
-    - `{
-        "message": "Spot approved/disapproved."
-    }`
-
+    - ```json
+      {
+          "message": "Spot approved/disapproved."
+      }
+      ```
+      
