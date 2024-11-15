@@ -1,8 +1,8 @@
-# Hitchhiking System API Documentation (Revised)
+# Hitchhiking System API Documentation
 
 ## Introduction
 
-This API allows users to manage hitchhiking trips, search for potential companions, rate hitchhiking spots, create events, and interact with emergency services. It supports user registration, profile management, trip posting, event participation, spot rating, achievement tracking, and more. The system is designed for scalability and performance, ensuring smooth interaction between users, events, and locations.
+This API allows users to manage hitchhiking rides, search for potential companions, rate hitchhiking spots, create events, and interact with emergency services. It supports user registration, profile management, ride posting, event participation, spot rating, achievement tracking, and more. The system is designed for scalability and performance, ensuring smooth interaction between users, events, and locations.
 
 ## Authentication
 
@@ -23,6 +23,12 @@ Registers a new user in the system.
         "email": "johndoe@example.com",
         "password": "password123",
         "confirm_password": "password123",
+        "sex": 0,
+        "location": {
+            "latitude": 17.389012830,
+            "longitude": 34.38129381,
+        },
+        "rating": 0,
         "bio": "Adventurer looking for companions."
     }
     ```
@@ -86,6 +92,12 @@ Fetches the profile details of the authenticated user.
       {
           "username": "johndoe",
           "email": "johndoe@example.com",
+          "gender": 0,
+          "location": {
+              "latitude": 19.39128301,
+              "longitude": 18.39128389,
+          },
+          "rating": 3.42,
           "bio": "Adventurer looking for companions."
       }
       ```
@@ -100,6 +112,10 @@ Updates the authenticated user's profile (e.g., bio, photo).
     ```json
     {
         "bio": "New bio information."
+        "location": {
+            "latitude": 19.382197312,
+            "longitude": 18.39123910,
+        }
     }
     ```
 
@@ -111,22 +127,27 @@ Updates the authenticated user's profile (e.g., bio, photo).
       }
       ```
 
-## Trip Management
+## Ride Management
 
-### Post a Trip
+### Post a Ride
 
-**POST /trip**
+**POST /ride**
 
-Allows users to post their upcoming hitchhiking trip with goals, approximate location, destination, and details.
+Allows users to post their upcoming hitchhiking ride with goals, approximate location, destination, and details.
 
 - **Request Body:**
     ```json
     {
-        "trip_name": "Hitchhike from NYC to LA",
-        "start_date": "2024-12-01T00:00:00Z",
-        "end_date": "2024-12-15T00:00:00Z",
-        "approximate_location": "New York City, NY",
-        "destination": "Los Angeles, CA",
+        "start_datetime": "2024-12-01T00:00:00Z",
+        "end_datetime": "2024-12-15T00:00:00Z",
+        "start_location": {
+            "latitude": 19.382197312,
+            "longitude": 18.39123910,
+        },
+        "end_location": {
+            "latitude": 19.382197312,
+            "longitude": 18.39123910,
+        }
         "goals": "Looking for a companion to join me on the road."
     }
     ```
@@ -135,63 +156,70 @@ Allows users to post their upcoming hitchhiking trip with goals, approximate loc
     - `201 Created`
     - ```json
       {
-          "trip_id": 45,
-          "message": "Trip posted successfully."
+          "ride_id": 45,
+          "message": "Ride posted successfully."
       }
       ```
 
-### Retrieve Trips
+### Retrieve Rides
 
-**GET /trips**
+**GET /rides**
 
-Searches for trips based on goals, location, and other parameters.
+Searches for rides based on goals, location, and other parameters.
 
 - **Query Parameters:**
-    - `goal`: Filter trips by goals.
-    - `location`: Filter trips by location.
-    - `start_date`: Filter trips by start date.
-    - `end_date`: Filter trips by end date.
+    - `goal`: Filter rides by goals.
+    - `latitude`: Filter rides by latitude.
+    - `longitude`: Filter rides by longitude.
+    - `start_datetime`: Filter rides by start date.
+    - `end_datetime`: Filter rides by end date.
 
 - **Response:**
     - `200 OK`
     - ```json
       [
           {
-              "trip_id": 45,
-              "trip_name": "Hitchhike from NYC to LA",
-              "start_date": "2024-12-01T00:00:00Z",
-              "end_date": "2024-12-15T00:00:00Z",
-              "approximate_location": "New York City, NY",
-              "destination": "Los Angeles, CA",
+              "ride_id": 45,
+              "ride_name": "Hitchhike from NYC to LA",
+              "start_datetime": "2024-12-01T00:00:00Z",
+              "end_datetime": "2024-12-15T00:00:00Z",
+              "start_location": {
+                    "latitude": 19.382197312,
+                    "longitude": 18.39123910,
+                },
+                "end_location": {
+                    "latitude": 19.382197312,
+                    "longitude": 18.39123910,
+                }
               "goals": "Looking for a companion."
           }
       ]
       ```
+      
+### Delete Ride
 
-### Delete Trip
+**DELETE /ride/{ride_id}**
 
-**DELETE /trip/{trip_id}**
-
-Deletes an existing trip.
+Deletes an existing ride.
 
 - **Response:**
     - `200 OK`
     - ```json
       {
-          "message": "Trip deleted successfully."
+          "message": "Ride deleted successfully."
       }
       ```
 
-### Respond to Trip
+### Respond to Ride
 
-**POST /trip/{trip_id}/respond**
+**POST /ride/{ride_id}/respond**
 
-A user can respond to a trip post, showing interest or asking for more details.
+A user can respond to a ride post, showing interest or asking for more details.
 
 - **Request Body:**
     ```json
     {
-        "message": "I’m interested, tell me more about your trip."
+        "message": "I’m interested, tell me more about your ride."
     }
     ```
 
@@ -214,7 +242,10 @@ Users can add a new hitchhiking spot, including tips and an initial rating.
 - **Request Body:**
     ```json
     {
-        "location": "Los Angeles, CA",
+        "location": {
+            "latitude": 19.382197312,
+            "longitude": 18.39123910,
+        },
         "tips": "Good spot near the freeway exit. Look for the gas station.",
         "initial_rating": 4,
         "waiting_time": "10-15 minutes"
@@ -247,7 +278,10 @@ Retrieve a list of spots based on filters like location, ratings, and waiting ti
       [
           {
               "spot_id": 123,
-              "location": "Los Angeles, CA",
+              "start_location": {
+                  "latitude": 19.382197312,
+                  "longitude": 18.39123910,
+              },
               "tips": "Good spot near the freeway exit. Look for the gas station.",
               "rating": 4.5,
               "waiting_time": "10-15 minutes"
@@ -318,7 +352,10 @@ Allows event organizers to create new hitchhiking-related events.
     ```json
     {
         "event_name": "Hitchhiking Meetup in NYC",
-        "location": "Central Park, NYC",
+        "location": {
+            "latitude": 19.382197312,
+            "longitude": 18.39123910,
+        },
         "date": "2024-12-10T14:00:00Z",
         "details": "Join us for a hitchhiking event!"
     }
@@ -350,7 +387,10 @@ List all events or filter by date, location, or type.
           {
               "event_id": 25,
               "event_name": "Hitchhiking Meetup in NYC",
-              "location": "Central Park, NYC",
+              "location": {
+                  "latitude": 19.382197312,
+                  "longitude": 18.39123910,
+              },
               "date": "2024-12-10T14:00:00Z",
               "details": "Join us for a hitchhiking event!"
           }
@@ -392,49 +432,6 @@ Users can rate an event they attended.
           "message": "Event rated successfully."
       }
       ```
-
-## Notifications
-
-### Get Notifications
-
-**GET /notifications**
-
-Fetches all notifications for the authenticated user (e.g., new trip responses, event updates).
-
-- **Response:**
-    - `200 OK`
-    - ```json
-      [
-          {
-              "notification_id": 1,
-              "message": "You have a new response to your trip post.",
-              "type": "response",
-              "read": false
-          }
-      ]
-      ```
-
-### Mark Notification as Read
-
-**POST /notifications/mark_as_read**
-
-Marks a specific notification as read.
-
-- **Request Body:**
-    ```json
-    {
-        "notification_id": 1
-    }
-    ```
-
-- **Response:**
-    - `200 OK`
-    - ```json
-      {
-          "message": "Notification marked as read."
-      }
-      ```
-
 ## Emergency Services
 
 ### SOS Button
@@ -473,7 +470,7 @@ Retrieves emergency contact details for a user.
 
 **GET /achievements**
 
-Fetches a list of achievements available for users (e.g., "First Trip Posted," "Top Spot Contributor").
+Fetches a list of achievements available for users (e.g., "First Ride Posted," "Top Spot Contributor").
 
 - **Response:**
     - `200 OK`
@@ -481,8 +478,8 @@ Fetches a list of achievements available for users (e.g., "First Trip Posted," "
       [
           {
               "achievement_id": 1,
-              "title": "First Trip Posted",
-              "description": "Awarded for posting your first trip."
+              "title": "First Ride Posted",
+              "description": "Awarded for posting your first ride."
           }
       ]
       ```
@@ -499,8 +496,8 @@ Retrieves a list of achievements unlocked by the authenticated user.
       [
           {
               "achievement_id": 1,
-              "title": "First Trip Posted",
-              "description": "Awarded for posting your first trip.",
+              "title": "First Ride Posted",
+              "description": "Awarded for posting your first ride.",
               "date_achieved": "2024-01-01T00:00:00Z"
           }
       ]
@@ -517,7 +514,7 @@ Allows a user to report another user for inappropriate behavior or safety concer
 - **Request Body:**
     ```json
     {
-        "reason": "Inappropriate behavior during a trip."
+        "reason": "Inappropriate behavior during a ride."
     }
     ```
 
